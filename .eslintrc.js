@@ -1,174 +1,46 @@
-module.exports = {
-    env: {
-      es6: true,
-      node: true,
-    },
-    extends: [
-      'eslint:recommended',
-      'plugin:@typescript-eslint/eslint-recommended',
-      'plugin:@typescript-eslint/recommended',
-      'plugin:react/recommended',
-      'plugin:import/warnings',
-      'plugin:prettier/recommended',
-    ],
-    parser: '@typescript-eslint/parser',
-    parserOptions: {
-      ecmaFeatures: {
-        jsx: true,
-      },
-      ecmaVersion: 2018,
-      sourceType: 'module',
-      project: './tsconfig.json',
-    },
-    plugins: ['@typescript-eslint', 'react', 'react-hooks'],
-    ignorePatterns: ['*.js', '*.jsx', 'node_modules/', 'graphql-schema.ts'],
-    rules: {
-      'jsx-quotes': ['error', 'prefer-single'],
-      quotes: ['error', 'single'],
-      'no-throw-literal': 'error',
-      'no-undef-init': 'error',
-      'no-shadow': [
-        'error',
-        {
-          hoist: 'all',
-        },
-      ],
-      '@typescript-eslint/consistent-type-definitions': ['warn', 'interface'],
-      '@typescript-eslint/prefer-optional-chain': 'warn',
-      '@typescript-eslint/array-type': [
-        'warn',
-        {
-          arrayOption: 'array',
-        },
-      ],
-      '@typescript-eslint/ban-types': [
-        'error',
-        {
-          types: {
-            Array: null,
-            Object: 'Use {} instead',
-            String: {
-              message: 'Use string instead',
-              fixWith: 'string',
-            },
-          },
-        },
-      ],
-      '@typescript-eslint/consistent-type-assertions': [
-        'warn',
-        {
-          assertionStyle: 'as',
-          objectLiteralTypeAssertions: 'never',
-        },
-      ],
-      'react-hooks/rules-of-hooks': 'error',
-      'react-hooks/exhaustive-deps': 'warn',
-      'space-before-function-paren': 'off',
-      'react/no-deprecated': 'warn',
-      'react/prop-types': 'off',
-      'react/display-name': 'off',
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-unused-vars': [
-        'error',
-        {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-          caughtErrorsIgnorePattern: '^_',
-          ignoreRestSiblings: true,
-        },
-      ],
-      '@typescript-eslint/explicit-function-return-type': 'off',
-      '@typescript-eslint/class-name-casing': [
-        'error',
-        {
-          allowUnderscorePrefix: true,
-        },
-      ],
-      'no-useless-escape': 'off',
-      '@typescript-eslint/no-use-before-define': 'off',
-      'no-prototype-builtins': 'off',
-      'prefer-spread': 'off',
-      'prefer-const': 'error',
-      '@typescript-eslint/no-inferrable-types': 'warn',
-      '@typescript-eslint/camelcase': 'off',
-      '@typescript-eslint/member-delimiter-style': 'error',
-      '@typescript-eslint/type-annotation-spacing': 'off',
-      'no-unexpected-multiline': 'off',
-      '@typescript-eslint/interface-name-prefix': [
-        'error',
-        {
-          prefixWithI: 'never',
-        },
-      ],
-      '@typescript-eslint/member-ordering': 'error',
-      '@typescript-eslint/no-empty-function': 'error',
-      '@typescript-eslint/no-empty-interface': 'error',
-      '@typescript-eslint/no-misused-new': 'error',
-      '@typescript-eslint/prefer-for-of': 'error',
-      '@typescript-eslint/semi': 'error',
-      complexity: 'error',
-      curly: 'error',
-      'dot-notation': 'error',
-      'eol-last': 'error',
-      eqeqeq: ['error', 'smart'],
-      'guard-for-in': 'error',
-      'max-classes-per-file': ['error', 1],
-      'no-caller': 'error',
-      'no-console': [
-        'warn',
-        {
-          allow: [
-            'debug',
-            'info',
-            'dirxml',
-            'warn',
-            'error',
-            'dir',
-            'time',
-            'timeEnd',
-            'timeLog',
-            'trace',
-            'assert',
-            'clear',
-            'count',
-            'countReset',
-            'group',
-            'groupCollapsed',
-            'groupEnd',
-            'table',
-            'Console',
-            'markTimeline',
-            'profile',
-            'profileEnd',
-            'timeline',
-            'timelineEnd',
-            'timeStamp',
-            'context',
-          ],
-        },
-      ],
-      'no-eval': 'error',
-      'import/no-default-export': 'error',
-      'import/order': [
-        'error',
-        {
-          alphabetize: { order: 'asc', caseInsensitive: false },
-          groups: [['builtin', 'external'], 'internal', ['parent', 'sibling'], 'index'],
-          pathGroups: [
-            {
-              pattern: '@{app,assets,atomic}{,/**}',
-              group: 'internal',
-            },
-          ],
-          pathGroupsExcludedImportTypes: [],
-          'newlines-between': 'never',
-        },
-      ],
-    },
-    settings: {
-      react: {
-        version: 'latest',
-      },
-    },
-  };
-  
+module.exports =  {
+  parser:  '@typescript-eslint/parser',  // Specifies the ESLint parser
+  plugins: ['@typescript-eslint', 'prettier'],
+  extends:  [
+    'plugin:@typescript-eslint/recommended',  // Uses the recommended rules from the @typescript-eslint/eslint-plugin
+    'plugin:@typescript-eslint/recommended-requiring-type-checking',
+    'prettier/@typescript-eslint',
+    'plugin:prettier/recommended',
+  ],
+  parserOptions:  {
+    ecmaVersion:  2018,  // Allows for the parsing of modern ECMAScript features
+    sourceType:  'module',  // Allows for the use of imports
+    project: './tsconfig.json'
+  },
+  rules:  {
+    // Place to specify ESLint rules. Can be used to overwrite rules specified from the extended configs
+    // e.g. '@typescript-eslint/explicit-function-return-type': 'off',
+    'prettier/prettier': ['error', {
+      endOfLine: 'auto',
+    }],
+    'func-call-spacing': 'off',
+    'block-scoped-var': 'error',
+    'array-bracket-spacing': ['error', 'never'],
+    'curly': ['error', 'all'],
+    '@typescript-eslint/no-namespace': 'off',
+    '@typescript-eslint/require-await': 'off',
+    '@typescript-eslint/explicit-function-return-type': 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/await-thenable': 'off',
+    '@typescript-eslint/no-use-before-define': 'off',
+    '@typescript-eslint/no-unused-vars': 'error',
+    '@typescript-eslint/no-unsafe-assignment': 'off',
+    '@typescript-eslint/no-unsafe-call': 'off',
+    '@typescript-eslint/no-unsafe-member-access': 'off',
+    '@typescript-eslint/no-unsafe-return': 'off',
+    '@typescript-eslint/no-var-requires': 'off',
+    '@typescript-eslint/no-floating-promises': 'off',
+    '@typescript-eslint/restrict-template-expressions': 'off',
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
+    '@typescript-eslint/member-delimiter-style': ['error', {
+      singleline: {
+        requireLast: false
+      }
+    }],
+  },
+};
