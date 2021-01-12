@@ -1,0 +1,30 @@
+{
+    "compilerOptions": {
+      "baseUrl": "./src",
+      "target": "es2016",
+      "module": "commonjs",
+      "lib": ["es2016", "esnext.asynciterable"],
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true,
+      "removeComments": true,
+      "preserveConstEnums": true,
+      "suppressImplicitAnyIndexErrors": true,
+      "outDir": "dist",
+      "skipLibCheck": true,
+      "sourceMap": true,
+      "paths": {
+        "@graphql-schema": ["./graphql-schema"],
+        "@graphql-schema/*": ["./graphql-schema/*"],
+      }
+    },
+    "exclude": [
+      "node_modules",
+      "dist",
+      "coverage",
+      "dangerfile.ts",
+      "*.test.ts",
+      "tsconfig-paths-dist.js",
+      "prod_node_modules"
+    ]
+  }
+  

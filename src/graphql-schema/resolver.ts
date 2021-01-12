@@ -1,7 +1,7 @@
 export const resolvers = {
-    Query: {
-        hello: (): string => {
-            return 'Hello world'
-        }
-    }
+  Query: {
+    hello: (): string => {
+      return 'Hello world';
+    },
+  },
 };
