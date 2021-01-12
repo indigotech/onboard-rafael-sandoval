@@ -1,7 +1,7 @@
-import { buildSchema } from 'graphql';
+import { gql } from 'apollo-server-express';
 
-export const schema = buildSchema(`
+export const schema = gql`
     type Query {
         hello: String
     }
-`);
+`;

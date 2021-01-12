@@ -1,5 +1,7 @@
-export const root = {
-    hello: () => {
-        return 'Hello world'
+export const resolvers = {
+    Query: {
+        hello: (): string => {
+            return 'Hello world'
+        }
     }
 };
