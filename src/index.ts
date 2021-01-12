@@ -1,16 +1,9 @@
-import { resolvers } from '@graphql-schema/resolver';
-import { schema } from '@graphql-schema/schema';
-import { ApolloServer } from 'apollo-server-express';
+import { serverSetup } from '@graphql-schema/connection';
 import * as express from 'express';
 
 const app = express();
 
-const server = new ApolloServer({
-  typeDefs: schema,
-  resolvers,
-});
-
-server.applyMiddleware({ app, path: '/graphql' });
+serverSetup(app);
 
 const PORT = process.env.PORT ?? 3000;
 app.listen(PORT, () => {
