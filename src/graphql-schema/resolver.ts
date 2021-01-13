@@ -12,8 +12,7 @@ export const Resolvers = {
     login: async (_: unknown, { email, password }: Credentials) => {
       const user = await login(email, password);
       const token = createToken({
-        name: user.name,
-        email: user.email,
+        id: user.id,
       });
       return {
         user,

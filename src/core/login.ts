@@ -2,8 +2,7 @@ import * as crypto from 'crypto';
 import * as jwt from 'jsonwebtoken';
 
 interface TokenFields {
-  name: string;
-  email: string;
+  id: number;
 }
 
 export const hash = (toHash: string): string => {
