@@ -1,6 +1,7 @@
 import * as crypto from 'crypto';
 import * as jwt from 'jsonwebtoken';
 
+// Essa interface terá mais variaveis na próxima branch
 interface TokenFields {
   id: number;
 }
