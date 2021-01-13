@@ -1,4 +1,5 @@
 import { Credentials } from '@graphql-schema/types';
+import { login } from '@data/db/query/user';
 
 export const Resolvers = {
   Query: {
@@ -7,19 +8,12 @@ export const Resolvers = {
     },
   },
   Mutation: {
-    login: (_: unknown, { email, password }: Credentials) => {
-      if (email && password) {
-        return {
-          user: {
-            id: 10,
-            name: 'Rafael Sandoval',
-            email: 'rafael.sandoval@taqtile.com.br',
-            birthDate: '05-15-1994',
-            cpf: '12345678900',
-          },
-          token: 'ABCDEFGHI123',
-        };
-      }
+    login: async (_: unknown, { email, password }: Credentials) => {
+      const user = await login(email, password);
+      return {
+        user,
+        token: 'ABCDEFGHI123',
+      };
     },
   },
 };

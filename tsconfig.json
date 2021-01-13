@@ -17,6 +17,8 @@
         "@graphql-schema/*": ["./graphql-schema/*"],
         "@data": ["./data"],
         "@data/*": ["./data/*"],
+        "@core": ["./core"],
+        "@core/*": ["./core/*"],
       }
     },
     "exclude": [
