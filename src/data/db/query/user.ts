@@ -2,9 +2,9 @@ import { User } from '@data/db/entity/user';
 import { hash } from '@core/hash';
 import { getConnection } from 'typeorm';
 
-export const login = async (email: string, password: string): Promise<User> => {
+export const login = (email: string, password: string): Promise<User> => {
   const hashedPassword = hash(password);
-  return await getConnection()
+  return getConnection()
     .createQueryBuilder()
     .select('user')
     .from(User, 'user')
