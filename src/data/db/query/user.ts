@@ -1,5 +1,5 @@
 import { User } from '@data/db/entity/user';
-import { hash } from '@core/hash';
+import { hash } from '@core/login';
 import { getRepository } from 'typeorm';
 
 export const login = (email: string, password: string): Promise<User> => {
