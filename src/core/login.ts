@@ -11,5 +11,6 @@ export const hash = (toHash: string): string => {
 };
 
 export const createToken = (user: TokenFields): string => {
-  return jwt.sign(user, 'SECRET', { expiresIn: 600 });
+  const options = user.rememberMe ? { expiresIn: '1 week' } : {};
+  return jwt.sign(user, 'SECRET', options);
 };
