@@ -20,3 +20,12 @@ export class User {
   @Column()
   password: string;
 }
+
+export interface IUser {
+  id?: number;
+  name: string;
+  email: string;
+  birthDate: Date;
+  cpf: string;
+  password: string;
+}
