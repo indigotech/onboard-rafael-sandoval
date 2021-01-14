@@ -1,6 +1,5 @@
-import { TokenFields } from '@core/login';
-
-export interface Credentials extends TokenFields {
+export interface Credentials {
   email: string;
   password: string;
+  rememberMe: boolean;
 }

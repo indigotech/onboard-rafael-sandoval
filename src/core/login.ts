@@ -1,7 +1,7 @@
 import * as crypto from 'crypto';
 import * as jwt from 'jsonwebtoken';
 
-export interface TokenFields {
+interface TokenFields {
   id: number;
   rememberMe: boolean;
 }
