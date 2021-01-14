@@ -54,114 +54,68 @@ describe('Graphql', () => {
     });
   });
 
+  const mutationQuery = (email: string, password: string, rememberMe?: boolean): string => {
+    let args = `(email: "${email}", password: "${password}"`;
+    args += rememberMe ? `, rememberMe: true)` : ')';
+    return `mutation {
+      login${args} {
+        user {
+          id
+          email
+        }
+        token
+      }
+    }`;
+  };
+
   describe('Mutation login', () => {
-    it('Simple Login', (done) => {
-      testGraphql(
-        done,
-        `mutation {
-          login(email: "rafael.sandoval@taqtile.com.br", password: "senha123") {
-            user {
-              id
-              email
-            }
-            token
-          }
-        }`,
-        (res) => {
-          const { user, token } = res.body.data.login;
-          expect(user.email).to.equal('rafael.sandoval@taqtile.com.br');
-          const decoded = decodeToken(token);
-          expect(parseInt(user.id)).to.equal(decoded['id']);
-          expect(decoded['exp']).to.equal(undefined);
-        },
-      );
+    it('Should be possible to login with valid email and password', (done) => {
+      testGraphql(done, mutationQuery('rafael.sandoval@taqtile.com.br', 'senha123'), (res) => {
+        const { user, token } = res.body.data.login;
+        expect(user.email).to.equal('rafael.sandoval@taqtile.com.br');
+        const decoded = decodeToken(token);
+        expect(parseInt(user.id)).to.equal(decoded['id']);
+        expect(decoded['exp']).to.equal(undefined);
+      });
     });
-    it('Login with 1 week token', (done) => {
-      testGraphql(
-        done,
-        `mutation {
-          login(email: "rafael.sandoval@taqtile.com.br", password: "senha123", rememberMe: true) {
-            user {
-              id
-              email
-            }
-            token
-          }
-        }`,
-        (res) => {
-          const { user, token } = res.body.data.login;
-          expect(user.email).to.equal('rafael.sandoval@taqtile.com.br');
-          const decoded = decodeToken(token);
-          expect(parseInt(user.id)).to.equal(decoded['id']);
-          expect(decoded['exp']).to.be.a('number');
-        },
-      );
+    it('Login with expiration option in the mutation should return token with expiration attribute', (done) => {
+      testGraphql(done, mutationQuery('rafael.sandoval@taqtile.com.br', 'senha123', true), (res) => {
+        const { user, token } = res.body.data.login;
+        expect(user.email).to.equal('rafael.sandoval@taqtile.com.br');
+        const decoded = decodeToken(token);
+        expect(parseInt(user.id)).to.equal(decoded['id']);
+        expect(decoded['exp']).to.be.a('number');
+      });
     });
-    it('Email in wrong format', (done) => {
-      testGraphql(
-        done,
-        `mutation {
-          login(email: "rafael.sandoval", password: "senha123") {
-            user {
-              id
-              email
-            }
-            token
-          }
-        }`,
-        (res) => {
-          const { errors, data } = res.body;
-          expect(errors.length).to.equal(1);
-          expect(errors[0].message).to.equal('Email is in wrong format');
-          expect(errors[0].extensions.code).to.equal('BAD_USER_INPUT');
-          expect(errors[0].extensions.status).to.equal('400');
-          expect(data.login).to.equal(null);
-        },
-      );
+    it('Try to login with email in wrong format should return an input error', (done) => {
+      testGraphql(done, mutationQuery('rafael.sandoval', 'senha123'), (res) => {
+        const { errors, data } = res.body;
+        expect(errors.length).to.equal(1);
+        expect(errors[0].message).to.equal('Email is in wrong format');
+        expect(errors[0].extensions.code).to.equal('BAD_USER_INPUT');
+        expect(errors[0].extensions.status).to.equal('400');
+        expect(data.login).to.equal(null);
+      });
     });
-    it('Email not found', (done) => {
-      testGraphql(
-        done,
-        `mutation {
-          login(email: "rafael.sandoval@taqtile.com", password: "senha123") {
-            user {
-              id
-              email
-            }
-            token
-          }
-        }`,
-        (res) => {
-          const { errors, data } = res.body;
-          expect(errors.length).to.equal(1);
-          expect(errors[0].message).to.equal('Invalid email or password');
-          expect(errors[0].extensions.code).to.equal('INVALID_EMAIL_PASSWORD');
-          expect(errors[0].extensions.status).to.equal('401');
-          expect(data.login).to.equal(null);
-        },
-      );
+    it('Try to login with incorrect email should return an "invalid email" error', (done) => {
+      testGraphql(done, mutationQuery('rafael@taqtile.com', 'senha123'), (res) => {
+        const { errors, data } = res.body;
+        expect(errors.length).to.equal(1);
+        expect(errors[0].message).to.equal('Invalid email or password');
+        expect(errors[0].extensions.code).to.equal('INVALID_EMAIL_PASSWORD');
+        expect(errors[0].extensions.status).to.equal('401');
+        expect(data.login).to.equal(null);
+      });
     });
-    it('Incorrect password', (done) => {
-      testGraphql(
-        done,
-        `mutation {
-          login(email: "rafael.sandoval@taqtile.com.br", password: "senha1") {
-            user {
-              id
-              email
-            }
-            token
-          }
-        }`,
-        (res) => {
-          const { errors, data } = res.body;
-          expect(errors.length).to.equal(1);
-          expect(errors[0].message).to.equal('Invalid email or password');
-          expect(errors[0].extensions.code).to.equal('INVALID_EMAIL_PASSWORD');
-          expect(errors[0].extensions.status).to.equal('401');
-          expect(data.login).to.equal(null);
-        },
-      );
+    it('Try to login with incorrect password should return an "invalid password" error', (done) => {
+      testGraphql(done, mutationQuery('rafael.sandoval@taqtile.com.br', 'senha1'), (res) => {
+        const { errors, data } = res.body;
+        expect(errors.length).to.equal(1);
+        expect(errors[0].message).to.equal('Invalid email or password');
+        expect(errors[0].extensions.code).to.equal('INVALID_EMAIL_PASSWORD');
+        expect(errors[0].extensions.status).to.equal('401');
+        expect(data.login).to.equal(null);
+      });
     });
   });
 });
