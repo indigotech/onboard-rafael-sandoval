@@ -9,10 +9,11 @@ export const Resolvers = {
     },
   },
   Mutation: {
-    login: async (_: unknown, { email, password }: Credentials) => {
+    login: async (_: unknown, { email, password, rememberMe }: Credentials) => {
       const user = await login(email, password);
       const token = createToken({
         id: user.id,
+        rememberMe,
       });
       return {
         user,
