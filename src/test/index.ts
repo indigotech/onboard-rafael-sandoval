@@ -1,12 +1,12 @@
 import { expect } from 'chai';
-import { start, env } from 'setup';
+import { start, setEnv } from 'setup';
 import type { Express } from 'express';
 import * as request from 'supertest';
 
 let app: Express;
 
 before(async () => {
-  env();
+  setEnv();
   app = await start();
 });
 

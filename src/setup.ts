@@ -2,7 +2,7 @@ import { serverSetup } from '@graphql-schema/connection';
 import * as dotenv from 'dotenv';
 import * as express from 'express';
 
-export const env = () => {
+export const setEnv = () => {
   if (!process.env.NODE_ENV) {
     dotenv.config();
   }

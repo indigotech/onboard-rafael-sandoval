@@ -1,4 +1,4 @@
-import { listen, env } from 'setup';
+import { listen, setEnv } from 'setup';
 
-env();
+setEnv();
 listen();
