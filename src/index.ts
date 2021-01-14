@@ -1,3 +1,3 @@
-import { listen } from './setup';
+import { listen } from 'setup';
 
 listen();

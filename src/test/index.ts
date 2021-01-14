@@ -1,5 +1,5 @@
 import assert = require('assert');
-import { start } from '../setup';
+import { start } from 'setup';
 import type { Express } from 'express';
 import * as request from 'supertest';
 
