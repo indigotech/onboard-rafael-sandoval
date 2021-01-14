@@ -1,3 +1,4 @@
-import { listen } from 'setup';
+import { listen, setEnv } from 'setup';
 
+setEnv();
 listen();

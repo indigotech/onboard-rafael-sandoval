@@ -4,7 +4,7 @@ import { createConnection, Connection } from 'typeorm';
 export const dbConnection = (): Promise<Connection> => {
   return createConnection({
     type: 'postgres',
-    url: 'postgress://admin:admin@localhost:5432/localdb',
+    url: process.env.DB_URL,
     entities: [User],
     synchronize: true,
   });

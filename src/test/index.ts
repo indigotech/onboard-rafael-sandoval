@@ -1,11 +1,12 @@
-import assert = require('assert');
-import { start } from 'setup';
+import { expect } from 'chai';
+import { start, setEnv } from 'setup';
 import type { Express } from 'express';
 import * as request from 'supertest';
 
 let app: Express;
 
 before(async () => {
+  setEnv();
   app = await start();
 });
 
@@ -22,7 +23,7 @@ describe('Graphql', () => {
           if (err) {
             return done(err);
           }
-          assert.strictEqual(res.body.data.hello, 'Hello world');
+          expect(res.body.data.hello).to.equal('Hello world');
           done();
         });
     });
