@@ -13,6 +13,7 @@ export const Resolvers = {
       const user = await login(email, password);
       const token = createToken({
         id: user.id,
+        rememberMe,
       });
       return {
         user,
