@@ -1,6 +1,6 @@
-import { Credentials } from '@graphql-schema/types';
+import { Credentials, CreateUserInput } from '@graphql-schema/types';
 import { getUserByEmail } from '@data/db/query/user';
-import { createToken, hash } from '@core/login';
+import { createToken, hash, checkAuth } from '@core/authentication';
 import { emailValidation } from '@core/validation';
 import { CustomError } from '@core/error-handling';
 
@@ -30,6 +30,18 @@ export const Resolvers = {
       return {
         user,
         token,
+      };
+    },
+    CreateUser: (_: unknown, user: CreateUserInput, context) => {
+      if (!checkAuth(context.token)) {
+        throw new CustomError('Unauthorized', 401);
+      }
+      return {
+        id: 3,
+        name: 'name',
+        email: 'email',
+        birthDate: 'birthDate',
+        cpf: 'cpf',
       };
     },
   },

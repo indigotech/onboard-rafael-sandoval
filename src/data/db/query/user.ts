@@ -2,7 +2,6 @@ import { User, IUser } from '@data/db/entity/user';
 import { DeleteResult, getRepository } from 'typeorm';
 
 export const getUserByEmail = (email: string): Promise<User> => {
-  //const hashedPassword = hash(password);
   return getRepository(User).findOne({ email });
 };
 

@@ -1,6 +1,6 @@
 import { createUser, deleteUserByEmail } from '@data/db/query/user';
 import { IUser } from '@data/db/entity/user';
-import { hash, decodeToken } from '@core/login';
+import { hash, decodeToken } from '@core/authentication';
 import { expect } from 'chai';
 import { start, setEnv } from 'setup';
 import type { Express } from 'express';

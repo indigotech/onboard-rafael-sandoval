@@ -18,3 +18,16 @@ export const createToken = (user: TokenFields): string => {
 export const decodeToken = (token: string) => {
   return jwt.decode(token);
 };
+
+export const checkAuth = (token: string): boolean => {
+  console.log(token);
+  try {
+    const payload = jwt.verify(token, 'SECRET');
+    if (new Date() > new Date(payload['exp'] * 1000)) {
+      return false;
+    }
+    return Number.isFinite(payload['id']) ? true : false;
+  } catch (error) {
+    return false;
+  }
+};
