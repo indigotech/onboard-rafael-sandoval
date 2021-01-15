@@ -1,8 +1,8 @@
 import { Credentials } from '@graphql-schema/types';
-import { login } from '@data/db/query/user';
-import { createToken } from '@core/login';
+import { getUserByEmail } from '@data/db/query/user';
+import { createToken, hash } from '@core/login';
 import { emailValidation } from '@core/validation';
-import { ApolloError, UserInputError } from 'apollo-server';
+import { CustomError } from '@core/error-handling';
 
 export const Resolvers = {
   Query: {
@@ -13,11 +13,15 @@ export const Resolvers = {
   Mutation: {
     login: async (_: unknown, { email, password, rememberMe }: Credentials) => {
       if (!emailValidation(email)) {
-        throw new UserInputError('Email is in wrong format', { status: '400' });
+        throw new CustomError('Email is in wrong format', 400);
       }
-      const user = await login(email, password);
+      const user = await getUserByEmail(email);
       if (!user) {
-        throw new ApolloError('Invalid email or password', 'INVALID_EMAIL_PASSWORD', { status: '401' });
+        throw new CustomError('Email not found', 401);
+      }
+      const hashedPassword = hash(password);
+      if (hashedPassword !== user.password) {
+        throw new CustomError('Password does not match email', 401);
       }
       const token = createToken({
         id: user.id,
