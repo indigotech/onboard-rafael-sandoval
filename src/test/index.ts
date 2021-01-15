@@ -1,6 +1,6 @@
 import { createUser, deleteUserByEmail } from '@data/db/query/user';
 import { IUser } from '@data/db/entity/user';
-import { hash, decodeToken } from '@core/authentication';
+import { decodeToken, hash } from '@core/authentication';
 import { expect } from 'chai';
 import { start, setEnv } from 'setup';
 import type { Express } from 'express';
@@ -13,7 +13,7 @@ const userTest = {
   email: 'rafael.sandoval@taqtile.com.br',
   birthDate: '05-15-1994',
   cpf: '12345678900',
-  password: hash('senha123'),
+  password: 'senha123',
 };
 
 const password = 'senha123';
@@ -25,9 +25,9 @@ interface IGraphqlUser extends IUser {
 const checkUser = (user: IGraphqlUser, userTest: IUser) => {
   expect(user.name).to.equal(userTest.name);
   expect(user.email).to.equal(userTest.email);
-  expect(new Date(parseInt(user.birthDate)).toString()).to.equal(userTest.birthDate.toString());
+  expect(new Date(parseInt(user.birthDate)).toString()).to.equal(new Date(userTest.birthDate).toString());
   expect(user.cpf).to.equal(userTest.cpf);
-  expect(user.password).to.equal(userTest.password);
+  expect(user.password).to.equal(hash(userTest.password));
 };
 
 const testGraphql = async (

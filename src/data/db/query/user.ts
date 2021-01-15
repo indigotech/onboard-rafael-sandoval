@@ -9,8 +9,7 @@ export const getUserByEmail = (email: string): Promise<User> => {
 
 export const createUser = async (user: CreateUserInput): Promise<User> => {
   const repo = getRepository(User);
-  user.password = hash(user.password);
-  const userEntity = repo.create(user);
+  const userEntity = repo.create({ ...user, password: hash(user.password) });
   return await repo.save(userEntity);
 };
 
