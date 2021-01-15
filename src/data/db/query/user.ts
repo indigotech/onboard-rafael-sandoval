@@ -1,10 +1,9 @@
 import { User, IUser } from '@data/db/entity/user';
-import { hash } from '@core/login';
 import { DeleteResult, getRepository } from 'typeorm';
 
-export const login = (email: string, password: string): Promise<User> => {
-  const hashedPassword = hash(password);
-  return getRepository(User).findOne({ email, password: hashedPassword });
+export const getUserByEmail = (email: string): Promise<User> => {
+  //const hashedPassword = hash(password);
+  return getRepository(User).findOne({ email });
 };
 
 export const createUser = async (userFields: IUser): Promise<User> => {

@@ -117,8 +117,7 @@ describe('Graphql', () => {
         const { errors, data } = res.body;
         expect(errors.length).to.equal(1);
         expect(errors[0].message).to.equal('Email is in wrong format');
-        expect(errors[0].extensions.code).to.equal('BAD_USER_INPUT');
-        expect(errors[0].extensions.status).to.equal('400');
+        expect(errors[0].code).to.equal(400);
         expect(data.login).to.equal(null);
       });
     });
@@ -127,9 +126,8 @@ describe('Graphql', () => {
       testGraphql(done, mutationQuery('rafael@taqtile.com', password), (res) => {
         const { errors, data } = res.body;
         expect(errors.length).to.equal(1);
-        expect(errors[0].message).to.equal('Invalid email or password');
-        expect(errors[0].extensions.code).to.equal('INVALID_EMAIL_PASSWORD');
-        expect(errors[0].extensions.status).to.equal('401');
+        expect(errors[0].message).to.equal('Email or password is invalid');
+        expect(errors[0].code).to.equal(401);
         expect(data.login).to.equal(null);
       });
     });
@@ -138,9 +136,8 @@ describe('Graphql', () => {
       testGraphql(done, mutationQuery(userTest.email, 'senha1'), (res) => {
         const { errors, data } = res.body;
         expect(errors.length).to.equal(1);
-        expect(errors[0].message).to.equal('Invalid email or password');
-        expect(errors[0].extensions.code).to.equal('INVALID_EMAIL_PASSWORD');
-        expect(errors[0].extensions.status).to.equal('401');
+        expect(errors[0].message).to.equal('Email or password is invalid');
+        expect(errors[0].code).to.equal(401);
         expect(data.login).to.equal(null);
       });
     });
