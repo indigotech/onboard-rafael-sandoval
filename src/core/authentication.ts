@@ -20,7 +20,6 @@ export const decodeToken = (token: string) => {
 };
 
 export const checkAuth = (token: string): boolean => {
-  console.log(token);
   try {
     const payload = jwt.verify(token, 'SECRET');
     if (new Date() > new Date(payload['exp'] * 1000)) {

@@ -11,7 +11,7 @@ let app: Express;
 const userTest = {
   name: 'Rafael',
   email: 'rafael.sandoval@taqtile.com.br',
-  birthDate: new Date('05-15-1994'),
+  birthDate: '05-15-1994',
   cpf: '12345678900',
   password: hash('senha123'),
 };
