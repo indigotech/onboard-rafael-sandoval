@@ -7,6 +7,7 @@ export const schema = gql`
     email: String!
     birthDate: String!
     cpf: String!
+    password: String!
   }
 
   type Login {

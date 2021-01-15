@@ -14,3 +14,7 @@ export const createToken = (user: TokenFields): string => {
   const options = user.rememberMe ? { expiresIn: '1 week' } : {};
   return jwt.sign({ id: user.id }, 'SECRET', options);
 };
+
+export const decodeToken = (token: string) => {
+  return jwt.decode(token);
+};
