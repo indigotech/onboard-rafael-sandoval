@@ -7,12 +7,12 @@ interface TokenFields {
 }
 
 export const hash = (toHash: string): string => {
-  return crypto.createHmac('sha256', 'SECRET').update(toHash).digest('hex');
+  return crypto.createHmac('sha256', process.env.HASH_SECRET).update(toHash).digest('hex');
 };
 
 export const createToken = (user: TokenFields): string => {
   const options = user.rememberMe ? { expiresIn: '1 week' } : {};
-  return jwt.sign({ id: user.id }, 'SECRET', options);
+  return jwt.sign({ id: user.id }, process.env.JWT_SECRET, options);
 };
 
 export const decodeToken = (token: string) => {
@@ -21,7 +21,7 @@ export const decodeToken = (token: string) => {
 
 export const checkAuth = (token: string): boolean => {
   try {
-    const payload = jwt.verify(token, 'SECRET');
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
     if (new Date() > new Date(payload['exp'] * 1000)) {
       return false;
     }
