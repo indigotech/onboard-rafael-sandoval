@@ -17,11 +17,11 @@ export const Resolvers = {
       }
       const user = await getUserByEmail(email);
       if (!user) {
-        throw new CustomError('Email not found', 401);
+        throw new CustomError('Email or password is invalid', 401);
       }
       const hashedPassword = hash(password);
       if (hashedPassword !== user.password) {
-        throw new CustomError('Password does not match email', 401);
+        throw new CustomError('Email or password is invalid', 401);
       }
       const token = createToken({
         id: user.id,

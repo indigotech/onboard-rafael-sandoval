@@ -126,7 +126,7 @@ describe('Graphql', () => {
       testGraphql(done, mutationQuery('rafael@taqtile.com', password), (res) => {
         const { errors, data } = res.body;
         expect(errors.length).to.equal(1);
-        expect(errors[0].message).to.equal('Email not found');
+        expect(errors[0].message).to.equal('Email or password is invalid');
         expect(errors[0].code).to.equal(401);
         expect(data.login).to.equal(null);
       });
@@ -136,7 +136,7 @@ describe('Graphql', () => {
       testGraphql(done, mutationQuery(userTest.email, 'senha1'), (res) => {
         const { errors, data } = res.body;
         expect(errors.length).to.equal(1);
-        expect(errors[0].message).to.equal('Password does not match email');
+        expect(errors[0].message).to.equal('Email or password is invalid');
         expect(errors[0].code).to.equal(401);
         expect(data.login).to.equal(null);
       });
