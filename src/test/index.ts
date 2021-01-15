@@ -1,4 +1,5 @@
 import { createUser, deleteUserByEmail } from '@data/db/query/user';
+import { IUser } from '@data/db/entity/user';
 import { hash, decodeToken } from '@core/login';
 import { expect } from 'chai';
 import { start, setEnv } from 'setup';
@@ -7,22 +8,46 @@ import * as request from 'supertest';
 
 let app: Express;
 
-const testGraphql = (done: Mocha.Done, query: string, callback: (res: request.Response) => void) => {
-  request(app)
-    .post('/graphql')
-    .send({
-      query,
-    })
-    .set('Accept', 'application/json')
-    .expect('Content-Type', /json/)
-    .expect(200)
-    .end((err, res) => {
-      if (err) {
-        return done(err);
-      }
-      callback(res);
-      done();
-    });
+const userTest = {
+  name: 'Rafael',
+  email: 'rafael.sandoval@taqtile.com.br',
+  birthDate: new Date('05-15-1994'),
+  cpf: '12345678900',
+  password: hash('senha123'),
+};
+
+const password = 'senha123';
+
+interface IGraphqlUser extends IUser {
+  birthDate: string;
+}
+
+const checkUser = (user: IGraphqlUser, userTest: IUser) => {
+  expect(user.name).to.equal(userTest.name);
+  expect(user.email).to.equal(userTest.email);
+  expect(new Date(parseInt(user.birthDate)).toString()).to.equal(userTest.birthDate.toString());
+  expect(user.cpf).to.equal(userTest.cpf);
+  expect(user.password).to.equal(userTest.password);
+};
+
+const testGraphql = async (
+  done: Mocha.Done,
+  query: string,
+  callback: (res: request.Response, base?: unknown) => void,
+) => {
+  try {
+    const res = await request(app)
+      .post('/graphql')
+      .send({
+        query,
+      })
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/);
+    callback(res);
+    done();
+  } catch (err) {
+    return done(err);
+  }
 };
 
 before(async () => {
@@ -31,18 +56,11 @@ before(async () => {
 });
 
 beforeEach(async () => {
-  const user = {
-    name: 'Rafael',
-    email: 'rafael.sandoval@taqtile.com.br',
-    birthDate: new Date('05-15-1994'),
-    cpf: '12345678900',
-    password: hash('senha123'),
-  };
-  await createUser(user);
+  await createUser(userTest);
 });
 
 afterEach(async () => {
-  await deleteUserByEmail('rafael.sandoval@taqtile.com.br');
+  await deleteUserByEmail(userTest.email);
 });
 
 describe('Graphql', () => {
@@ -62,6 +80,10 @@ describe('Graphql', () => {
         user {
           id
           email
+          name
+          birthDate
+          cpf
+          password
         }
         token
       }
@@ -70,25 +92,28 @@ describe('Graphql', () => {
 
   describe('Mutation login', () => {
     it('Should be possible to login with valid email and password', (done) => {
-      testGraphql(done, mutationQuery('rafael.sandoval@taqtile.com.br', 'senha123'), (res) => {
+      testGraphql(done, mutationQuery(userTest.email, password), (res) => {
         const { user, token } = res.body.data.login;
-        expect(user.email).to.equal('rafael.sandoval@taqtile.com.br');
+        checkUser(user, userTest);
         const decoded = decodeToken(token);
         expect(parseInt(user.id)).to.equal(decoded['id']);
         expect(decoded['exp']).to.equal(undefined);
       });
     });
+
     it('Login with expiration option in the mutation should return token with expiration attribute', (done) => {
-      testGraphql(done, mutationQuery('rafael.sandoval@taqtile.com.br', 'senha123', true), (res) => {
+      testGraphql(done, mutationQuery(userTest.email, password, true), (res) => {
         const { user, token } = res.body.data.login;
-        expect(user.email).to.equal('rafael.sandoval@taqtile.com.br');
+        checkUser(user, userTest);
         const decoded = decodeToken(token);
         expect(parseInt(user.id)).to.equal(decoded['id']);
         expect(decoded['exp']).to.be.a('number');
+        expect(new Date(decoded['exp'] * 1000) > new Date()).to.be.true;
       });
     });
+
     it('Try to login with email in wrong format should return an input error', (done) => {
-      testGraphql(done, mutationQuery('rafael.sandoval', 'senha123'), (res) => {
+      testGraphql(done, mutationQuery('rafael.sandoval', password), (res) => {
         const { errors, data } = res.body;
         expect(errors.length).to.equal(1);
         expect(errors[0].message).to.equal('Email is in wrong format');
@@ -97,8 +122,9 @@ describe('Graphql', () => {
         expect(data.login).to.equal(null);
       });
     });
+
     it('Try to login with incorrect email should return an "invalid email" error', (done) => {
-      testGraphql(done, mutationQuery('rafael@taqtile.com', 'senha123'), (res) => {
+      testGraphql(done, mutationQuery('rafael@taqtile.com', password), (res) => {
         const { errors, data } = res.body;
         expect(errors.length).to.equal(1);
         expect(errors[0].message).to.equal('Invalid email or password');
@@ -107,8 +133,9 @@ describe('Graphql', () => {
         expect(data.login).to.equal(null);
       });
     });
+
     it('Try to login with incorrect password should return an "invalid password" error', (done) => {
-      testGraphql(done, mutationQuery('rafael.sandoval@taqtile.com.br', 'senha1'), (res) => {
+      testGraphql(done, mutationQuery(userTest.email, 'senha1'), (res) => {
         const { errors, data } = res.body;
         expect(errors.length).to.equal(1);
         expect(errors[0].message).to.equal('Invalid email or password');

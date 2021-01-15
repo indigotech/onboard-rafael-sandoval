@@ -25,7 +25,7 @@ export interface IUser {
   id?: number;
   name: string;
   email: string;
-  birthDate: Date;
+  birthDate: Date | string;
   cpf: string;
   password: string;
 }
