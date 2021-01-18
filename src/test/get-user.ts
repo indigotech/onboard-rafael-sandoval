@@ -1,7 +1,6 @@
 import { createUser, deleteUserByEmail } from '@data/db/query/user';
 import { createToken } from '@core/authentication';
-import { userTest, checkUser } from '@test';
-import { expect } from 'chai';
+import { userTest, checkUser, checkError } from '@test/helpers/user';
 import * as request from 'supertest';
 
 let id: number;
@@ -19,15 +18,9 @@ const queryGetUser = `
   }
 `;
 
-const testGetUser = async (
-  done: Mocha.Done,
-  query: string,
-  id: number,
-  token: string,
-  callback: (res: request.Response) => void,
-) => {
+const testGetUser = async (query: string, id: number, token: string): Promise<request.Response> => {
   try {
-    const res = await request(`${process.env.URL}:${process.env.PORT}`)
+    return await request(`${process.env.URL}:${process.env.PORT}`)
       .post('/graphql')
       .send({
         query,
@@ -38,18 +31,9 @@ const testGetUser = async (
       .set('Accept', 'application/json')
       .set('Authorization', token)
       .expect('Content-Type', /json/);
-    callback(res);
-    done();
   } catch (err) {
-    return done(err);
+    throw err;
   }
-};
-
-const checkError = (obj: { message: string; code: number; data: any; errors: any }) => {
-  expect(obj.errors.length).to.equal(1);
-  expect(obj.errors[0].message).to.equal(obj.message);
-  expect(obj.errors[0].code).to.equal(obj.code);
-  expect(obj.data.getUserById).to.equal(null);
 };
 
 describe('Query getUserById', () => {
@@ -58,37 +42,36 @@ describe('Query getUserById', () => {
     id = newUser.id;
     token = createToken({ id: newUser.id, rememberMe: true });
   });
+
   afterEach(async () => {
     await deleteUserByEmail(userTest.email);
   });
-  it('Should return an user when called with existing id and authorization', (done) => {
-    testGetUser(done, queryGetUser, id, token, (res) => {
-      const user = res.body.data.getUserById;
-      checkUser(user, userTest);
+
+  it('Should return an user when called with existing id and authorization', async () => {
+    const res = await testGetUser(queryGetUser, id, token);
+    const user = res.body.data.getUserById;
+    checkUser(user, userTest);
+    });
+
+  it('Should return unauthorized when requested without valid token', async () => {
+    const res = await testGetUser(queryGetUser, id, 'abc');
+    const { data, errors } = res.body;
+    checkError({
+      message: 'Unauthorized',
+      code: 401,
+      data,
+      errors,
     });
   });
 
-  it('Should return unauthorized when requested without valid token', (done) => {
-    testGetUser(done, queryGetUser, id, 'abc', (res) => {
-      const { data, errors } = res.body;
-      checkError({
-        message: 'Unauthorized',
-        code: 401,
-        data,
-        errors,
-      });
-    });
-  });
-
-  it('Should return "not found error" when requested id does not match an user', (done) => {
-    testGetUser(done, queryGetUser, 0, token, (res) => {
-      const { data, errors } = res.body;
-      checkError({
-        message: 'User not found',
-        code: 404,
-        data,
-        errors,
-      });
+  it('Should return "not found error" when requested id does not match an user', async () => {
+    const res = await testGetUser(queryGetUser, 0, token);
+    const { data, errors } = res.body;
+    checkError({
+      message: 'User not found',
+      code: 404,
+      data,
+      errors,
     });
   });
 });

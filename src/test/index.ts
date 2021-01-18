@@ -1,34 +1,11 @@
 import { createUser, deleteUserByEmail } from '@data/db/query/user';
-import { IUser, User } from '@data/db/entity/user';
 import { decodeToken } from '@core/authentication';
+import { userTest, checkUser } from '@test/helpers/user';
 import { expect } from 'chai';
 import { listen, setEnv } from 'setup';
 import * as request from 'supertest';
 
-export const userTest = {
-  name: 'Rafael',
-  email: 'rafael.sandoval@taqtile.com.br',
-  birthDate: '05-15-1994',
-  cpf: '12345678900',
-  password: 'senha123',
-};
-
 const password = 'senha123';
-
-interface IGraphqlUser extends IUser {
-  birthDate: string;
-}
-
-export const checkUserStrings = (user: IGraphqlUser | IUser | User, userTest: IUser) => {
-  expect(user.name).to.equal(userTest.name);
-  expect(user.email).to.equal(userTest.email);
-  expect(user.cpf).to.equal(userTest.cpf);
-};
-
-export const checkUser = (user: IGraphqlUser, userTest: IUser) => {
-  checkUserStrings(user, userTest);
-  expect(new Date(parseInt(user.birthDate)).toString()).to.equal(new Date(userTest.birthDate).toString());
-};
 
 const testGraphql = async (
   done: Mocha.Done,
