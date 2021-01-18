@@ -4,7 +4,7 @@ import { DeleteResult, getRepository } from 'typeorm';
 import { CreateUserInput } from '@graphql-schema/types';
 
 export const getUserById = (id: number): Promise<User> => {
-  return getRepository(User).findOne({ id }, { select: ['id', 'name', 'email', 'birthDate', 'cpf'] });
+  return getRepository(User).findOne({ id });
 };
 
 export const getUserByEmail = (email: string): Promise<User> => {
