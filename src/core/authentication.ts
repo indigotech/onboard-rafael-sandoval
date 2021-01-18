@@ -7,7 +7,7 @@ interface TokenFields {
 }
 
 interface IPayload {
-  id: string;
+  id: number;
   iat: number;
   exp: number;
 }
@@ -43,7 +43,7 @@ export const checkAuth = (token: string): boolean => {
   try {
     const payload = verifyToken(token, process.env.JWT_SECRET);
     const isExpired = new Date() > new Date(payload.exp * 1000);
-    return isExpired && Number.isFinite(payload.id);
+    return !isExpired && Number.isFinite(payload.id);
   } catch (error) {
     return false;
   }

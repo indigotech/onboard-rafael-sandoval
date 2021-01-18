@@ -31,25 +31,7 @@ const checkUser = (user: IGraphqlUser, userTest: IUser) => {
   expect(new Date(parseInt(user.birthDate)).toString()).to.equal(new Date(userTest.birthDate).toString());
 };
 
-export const mutationLogin = (email: string, password: string, rememberMe?: boolean): string => {
-  let args = `(email: "${email}", password: "${password}"`;
-  args += rememberMe ? `, rememberMe: true)` : ')';
-  return `mutation {
-    login${args} {
-      user {
-        id
-        email
-        name
-        birthDate
-        cpf
-        password
-      }
-      token
-    }
-  }`;
-};
-
-export const testLogin = async (
+const testGraphql = async (
   done: Mocha.Done,
   query: string,
   callback: (res: request.Response, base?: unknown) => void,
@@ -77,21 +59,40 @@ before(async () => {
 describe('Graphql', () => {
   describe('Query hello', () => {
     it('Hello world', (done) => {
-      testLogin(done, '{ hello }', (res) => {
+      testGraphql(done, '{ hello }', (res) => {
         expect(res.body.data.hello).to.equal('Hello world');
       });
     });
   });
 
+  const mutationQuery = (email: string, password: string, rememberMe?: boolean): string => {
+    let args = `(email: "${email}", password: "${password}"`;
+    args += rememberMe ? `, rememberMe: true)` : ')';
+    return `mutation {
+      login${args} {
+        user {
+          id
+          email
+          name
+          birthDate
+          cpf
+          password
+        }
+        token
+      }
+    }`;
+  };
+
+  beforeEach(async () => {
+    await createUser(userTest);
+  });
+  afterEach(async () => {
+    await deleteUserByEmail(userTest.email);
+  });
+
   describe('Mutation login', () => {
-    beforeEach(async () => {
-      await createUser(userTest);
-    });
-    afterEach(async () => {
-      await deleteUserByEmail(userTest.email);
-    });
     it('Should be possible to login with valid email and password', (done) => {
-      testLogin(done, mutationLogin(userTest.email, password), (res) => {
+      testGraphql(done, mutationQuery(userTest.email, password), (res) => {
         const { user, token } = res.body.data.login;
         checkUser(user, userTest);
         const decoded = decodeToken(token);
@@ -101,7 +102,7 @@ describe('Graphql', () => {
     });
 
     it('Login with expiration option in the mutation should return token with expiration attribute', (done) => {
-      testLogin(done, mutationLogin(userTest.email, password, true), (res) => {
+      testGraphql(done, mutationQuery(userTest.email, password, true), (res) => {
         const { user, token } = res.body.data.login;
         checkUser(user, userTest);
         const decoded = decodeToken(token);
@@ -112,7 +113,7 @@ describe('Graphql', () => {
     });
 
     it('Try to login with email in wrong format should return an input error', (done) => {
-      testLogin(done, mutationLogin('rafael.sandoval', password), (res) => {
+      testGraphql(done, mutationQuery('rafael.sandoval', password), (res) => {
         const { errors, data } = res.body;
         expect(errors.length).to.equal(1);
         expect(errors[0].message).to.equal('Email is in wrong format');
@@ -122,7 +123,7 @@ describe('Graphql', () => {
     });
 
     it('Try to login with incorrect email should return an "invalid email" error', (done) => {
-      testLogin(done, mutationLogin('rafael@taqtile.com', password), (res) => {
+      testGraphql(done, mutationQuery('rafael@taqtile.com', password), (res) => {
         const { errors, data } = res.body;
         expect(errors.length).to.equal(1);
         expect(errors[0].message).to.equal('Email or password is invalid');
@@ -132,7 +133,7 @@ describe('Graphql', () => {
     });
 
     it('Try to login with incorrect password should return an "invalid password" error', (done) => {
-      testLogin(done, mutationLogin(userTest.email, 'senha1'), (res) => {
+      testGraphql(done, mutationQuery(userTest.email, 'senha1'), (res) => {
         const { errors, data } = res.body;
         expect(errors.length).to.equal(1);
         expect(errors[0].message).to.equal('Email or password is invalid');

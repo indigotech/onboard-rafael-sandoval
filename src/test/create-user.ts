@@ -15,8 +15,8 @@ const createTest = {
 };
 
 const mutationCreateUser = `
-  mutation CreateUser($user: CreateUserInput!) {
-    CreateUser(user: $user) {
+  mutation createUser($user: CreateUserInput!) {
+    createUser(user: $user) {
       id
       email
       name
@@ -64,7 +64,7 @@ const checkError = (obj: { message: string; code: number; data: any; errors: any
   expect(obj.errors.length).to.equal(1);
   expect(obj.errors[0].message).to.equal(obj.message);
   expect(obj.errors[0].code).to.equal(obj.code);
-  expect(obj.data.CreateUser).to.equal(null);
+  expect(obj.data.createUser).to.equal(null);
   expect(obj.user).to.be.undefined;
   expect(obj.userCount).to.equal(1);
 };
@@ -84,7 +84,7 @@ describe('Mutation CreateUser', () => {
     testCreateUser(done, mutationCreateUser, createTest, token, (res, user, userCount) => {
       const { data } = res.body;
       expect(userCount).to.equal(2);
-      expect(user.id.toString()).to.equal(data.CreateUser.id);
+      expect(user.id.toString()).to.equal(data.createUser.id);
       checkCreatedUser(user, createTest);
     });
   });
