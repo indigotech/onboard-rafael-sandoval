@@ -29,6 +29,6 @@ export const schema = gql`
 
   type Mutation {
     login(email: String!, password: String!, rememberMe: Boolean): Login
-    CreateUser(user: CreateUserInput!): User
+    createUser(user: CreateUserInput!): User
   }
 `;

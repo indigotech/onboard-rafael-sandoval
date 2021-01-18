@@ -6,6 +6,12 @@ interface TokenFields {
   rememberMe: boolean;
 }
 
+interface IPayload {
+  id: string;
+  iat: number;
+  exp: number;
+}
+
 export const hash = (toHash: string): string => {
   return crypto.createHmac('sha256', process.env.HASH_SECRET).update(toHash).digest('hex');
 };
@@ -15,17 +21,29 @@ export const createToken = (user: TokenFields): string => {
   return jwt.sign({ id: user.id }, process.env.JWT_SECRET, options);
 };
 
-export const decodeToken = (token: string) => {
-  return jwt.decode(token);
+export const decodeToken = (token: string): IPayload => {
+  const payload = jwt.decode(token);
+  return {
+    id: payload['id'],
+    iat: payload['iat'],
+    exp: payload['exp'],
+  };
+};
+
+export const verifyToken = (token: string, secrect: string): IPayload => {
+  const payload = jwt.verify(token, secrect);
+  return {
+    id: payload['id'],
+    iat: payload['iat'],
+    exp: payload['exp'],
+  };
 };
 
 export const checkAuth = (token: string): boolean => {
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET);
-    if (new Date() > new Date(payload['exp'] * 1000)) {
-      return false;
-    }
-    return Number.isFinite(payload['id']) ? true : false;
+    const payload = verifyToken(token, process.env.JWT_SECRET);
+    const isExpired = new Date() > new Date(payload.exp * 1000);
+    return isExpired && Number.isFinite(payload.id);
   } catch (error) {
     return false;
   }

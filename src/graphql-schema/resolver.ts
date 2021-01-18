@@ -32,7 +32,7 @@ export const Resolvers = {
         token,
       };
     },
-    CreateUser: async (_: unknown, { user }: { user: CreateUserInput }, context) => {
+    createUser: async (_: unknown, { user }: { user: CreateUserInput }, context) => {
       if (!checkAuth(context.token)) {
         throw new CustomError('Unauthorized', 401);
       }

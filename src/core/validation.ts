@@ -4,11 +4,6 @@ export const emailValidation = (email: string): boolean => {
 };
 
 export const passwordValidation = (password: string): boolean => {
-  if (password.length < 7) {
-    return false;
-  }
-  if (/[a-zA-z]/.test(password) && /\d/.test(password)) {
-    return true;
-  }
-  return false;
+  const hasLetterAndNumber = /[a-zA-z]/.test(password) && /\d/.test(password);
+  return hasLetterAndNumber && password.length >= 7;
 };

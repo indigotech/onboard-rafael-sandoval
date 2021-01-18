@@ -10,7 +10,7 @@ export const getUserByEmail = (email: string): Promise<User> => {
 export const createUser = async (user: CreateUserInput): Promise<User> => {
   const repo = getRepository(User);
   const userEntity = repo.create({ ...user, password: hash(user.password) });
-  return await repo.save(userEntity);
+  return repo.save(userEntity);
 };
 
 export const deleteUserByEmail = async (email: string): Promise<DeleteResult> => {

@@ -96,8 +96,8 @@ describe('Graphql', () => {
         const { user, token } = res.body.data.login;
         checkUser(user, userTest);
         const decoded = decodeToken(token);
-        expect(parseInt(user.id)).to.equal(decoded['id']);
-        expect(decoded['exp']).to.equal(undefined);
+        expect(parseInt(user.id)).to.equal(decoded.id);
+        expect(decoded.exp).to.equal(undefined);
       });
     });
 
@@ -106,9 +106,9 @@ describe('Graphql', () => {
         const { user, token } = res.body.data.login;
         checkUser(user, userTest);
         const decoded = decodeToken(token);
-        expect(parseInt(user.id)).to.equal(decoded['id']);
-        expect(decoded['exp']).to.be.a('number');
-        expect(new Date(decoded['exp'] * 1000) > new Date()).to.be.true;
+        expect(parseInt(user.id)).to.equal(decoded.id);
+        expect(decoded.exp).to.be.a('number');
+        expect(new Date(decoded.exp * 1000) > new Date()).to.be.true;
       });
     });
 
