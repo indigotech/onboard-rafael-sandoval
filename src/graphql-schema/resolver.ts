@@ -1,5 +1,5 @@
 import { CreateUserInput, Credentials } from '@graphql-schema/types';
-import { getUserByEmail, createUser } from '@data/db/query/user';
+import { getUserById, getUserByEmail, createUser } from '@data/db/query/user';
 import { createToken, hash, checkAuth } from '@core/authentication';
 import { emailValidation, passwordValidation } from '@core/validation';
 import { CustomError } from '@core/error-handling';
@@ -8,6 +8,16 @@ export const Resolvers = {
   Query: {
     hello: (): string => {
       return 'Hello world';
+    },
+    getUserById: async (_: unknown, { id }: { id: number }, context) => {
+      if (!checkAuth(context.token)) {
+        throw new CustomError('Unauthorized', 401);
+      }
+      const user = await getUserById(id);
+      if (!user) {
+        throw new CustomError('User not found', 404);
+      }
+      return user;
     },
   },
   Mutation: {

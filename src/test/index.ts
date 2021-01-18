@@ -1,6 +1,6 @@
 import { createUser, deleteUserByEmail } from '@data/db/query/user';
 import { IUser, User } from '@data/db/entity/user';
-import { decodeToken, hash } from '@core/authentication';
+import { decodeToken } from '@core/authentication';
 import { expect } from 'chai';
 import { listen, setEnv } from 'setup';
 import * as request from 'supertest';
@@ -23,10 +23,9 @@ export const checkUserStrings = (user: IGraphqlUser | IUser | User, userTest: IU
   expect(user.name).to.equal(userTest.name);
   expect(user.email).to.equal(userTest.email);
   expect(user.cpf).to.equal(userTest.cpf);
-  expect(user.password).to.equal(hash(userTest.password));
 };
 
-const checkUser = (user: IGraphqlUser, userTest: IUser) => {
+export const checkUser = (user: IGraphqlUser, userTest: IUser) => {
   checkUserStrings(user, userTest);
   expect(new Date(parseInt(user.birthDate)).toString()).to.equal(new Date(userTest.birthDate).toString());
 };
@@ -76,7 +75,6 @@ describe('Graphql', () => {
           name
           birthDate
           cpf
-          password
         }
         token
       }

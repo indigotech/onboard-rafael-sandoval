@@ -23,7 +23,6 @@ const mutationCreateUser = `
       name
       birthDate
       cpf
-      password
     }
   }
 `;
