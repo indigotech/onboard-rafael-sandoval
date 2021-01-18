@@ -1,7 +1,7 @@
-import { Credentials } from '@graphql-schema/types';
-import { getUserByEmail } from '@data/db/query/user';
-import { createToken, hash } from '@core/login';
-import { emailValidation } from '@core/validation';
+import { CreateUserInput, Credentials } from '@graphql-schema/types';
+import { getUserByEmail, createUser } from '@data/db/query/user';
+import { createToken, hash, checkAuth } from '@core/authentication';
+import { emailValidation, passwordValidation } from '@core/validation';
 import { CustomError } from '@core/error-handling';
 
 export const Resolvers = {
@@ -31,6 +31,24 @@ export const Resolvers = {
         user,
         token,
       };
+    },
+    createUser: async (_: unknown, { user }: { user: CreateUserInput }, context) => {
+      if (!checkAuth(context.token)) {
+        throw new CustomError('Unauthorized', 401);
+      }
+      if (!emailValidation(user.email)) {
+        throw new CustomError('Invalid email format', 400);
+      }
+      if (!passwordValidation(user.password)) {
+        throw new CustomError('Invalid Password', 400);
+      }
+      try {
+        return await createUser(user);
+      } catch (error) {
+        if (error.code === '23505') {
+          throw new CustomError('Email already exists', 409);
+        }
+      }
     },
   },
 };
