@@ -3,6 +3,10 @@ import { hash } from '@core/authentication';
 import { DeleteResult, getRepository } from 'typeorm';
 import { CreateUserInput } from '@graphql-schema/types';
 
+export const getUsers = (): Promise<User[]> => {
+  return getRepository(User).find();
+};
+
 export const getUserByEmail = (email: string): Promise<User> => {
   return getRepository(User).findOne({ email });
 };

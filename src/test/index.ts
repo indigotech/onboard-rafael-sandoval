@@ -1,14 +1,11 @@
 import { createUser, deleteUserByEmail } from '@data/db/query/user';
-import { IUser } from '@data/db/entity/user';
+import { IUser, User } from '@data/db/entity/user';
 import { decodeToken, hash } from '@core/authentication';
 import { expect } from 'chai';
-import { start, setEnv } from 'setup';
-import type { Express } from 'express';
+import { listen, setEnv } from 'setup';
 import * as request from 'supertest';
 
-let app: Express;
-
-const userTest = {
+export const userTest = {
   name: 'Rafael',
   email: 'rafael.sandoval@taqtile.com.br',
   birthDate: '05-15-1994',
@@ -22,21 +19,43 @@ interface IGraphqlUser extends IUser {
   birthDate: string;
 }
 
-const checkUser = (user: IGraphqlUser, userTest: IUser) => {
+export const checkUserStrings = (user: IGraphqlUser | IUser | User, userTest: IUser) => {
   expect(user.name).to.equal(userTest.name);
   expect(user.email).to.equal(userTest.email);
-  expect(new Date(parseInt(user.birthDate)).toString()).to.equal(new Date(userTest.birthDate).toString());
   expect(user.cpf).to.equal(userTest.cpf);
   expect(user.password).to.equal(hash(userTest.password));
 };
 
-const testGraphql = async (
+const checkUser = (user: IGraphqlUser, userTest: IUser) => {
+  checkUserStrings(user, userTest);
+  expect(new Date(parseInt(user.birthDate)).toString()).to.equal(new Date(userTest.birthDate).toString());
+};
+
+export const mutationLogin = (email: string, password: string, rememberMe?: boolean): string => {
+  let args = `(email: "${email}", password: "${password}"`;
+  args += rememberMe ? `, rememberMe: true)` : ')';
+  return `mutation {
+    login${args} {
+      user {
+        id
+        email
+        name
+        birthDate
+        cpf
+        password
+      }
+      token
+    }
+  }`;
+};
+
+export const testLogin = async (
   done: Mocha.Done,
   query: string,
   callback: (res: request.Response, base?: unknown) => void,
 ) => {
   try {
-    const res = await request(app)
+    const res = await request(`${process.env.URL}:${process.env.PORT}`)
       .post('/graphql')
       .send({
         query,
@@ -52,47 +71,27 @@ const testGraphql = async (
 
 before(async () => {
   setEnv();
-  app = await start();
-});
-
-beforeEach(async () => {
-  await createUser(userTest);
-});
-
-afterEach(async () => {
-  await deleteUserByEmail(userTest.email);
+  await listen();
 });
 
 describe('Graphql', () => {
   describe('Query hello', () => {
     it('Hello world', (done) => {
-      testGraphql(done, '{ hello }', (res) => {
+      testLogin(done, '{ hello }', (res) => {
         expect(res.body.data.hello).to.equal('Hello world');
       });
     });
   });
 
-  const mutationQuery = (email: string, password: string, rememberMe?: boolean): string => {
-    let args = `(email: "${email}", password: "${password}"`;
-    args += rememberMe ? `, rememberMe: true)` : ')';
-    return `mutation {
-      login${args} {
-        user {
-          id
-          email
-          name
-          birthDate
-          cpf
-          password
-        }
-        token
-      }
-    }`;
-  };
-
   describe('Mutation login', () => {
+    beforeEach(async () => {
+      await createUser(userTest);
+    });
+    afterEach(async () => {
+      await deleteUserByEmail(userTest.email);
+    });
     it('Should be possible to login with valid email and password', (done) => {
-      testGraphql(done, mutationQuery(userTest.email, password), (res) => {
+      testLogin(done, mutationLogin(userTest.email, password), (res) => {
         const { user, token } = res.body.data.login;
         checkUser(user, userTest);
         const decoded = decodeToken(token);
@@ -102,7 +101,7 @@ describe('Graphql', () => {
     });
 
     it('Login with expiration option in the mutation should return token with expiration attribute', (done) => {
-      testGraphql(done, mutationQuery(userTest.email, password, true), (res) => {
+      testLogin(done, mutationLogin(userTest.email, password, true), (res) => {
         const { user, token } = res.body.data.login;
         checkUser(user, userTest);
         const decoded = decodeToken(token);
@@ -113,7 +112,7 @@ describe('Graphql', () => {
     });
 
     it('Try to login with email in wrong format should return an input error', (done) => {
-      testGraphql(done, mutationQuery('rafael.sandoval', password), (res) => {
+      testLogin(done, mutationLogin('rafael.sandoval', password), (res) => {
         const { errors, data } = res.body;
         expect(errors.length).to.equal(1);
         expect(errors[0].message).to.equal('Email is in wrong format');
@@ -123,7 +122,7 @@ describe('Graphql', () => {
     });
 
     it('Try to login with incorrect email should return an "invalid email" error', (done) => {
-      testGraphql(done, mutationQuery('rafael@taqtile.com', password), (res) => {
+      testLogin(done, mutationLogin('rafael@taqtile.com', password), (res) => {
         const { errors, data } = res.body;
         expect(errors.length).to.equal(1);
         expect(errors[0].message).to.equal('Email or password is invalid');
@@ -133,7 +132,7 @@ describe('Graphql', () => {
     });
 
     it('Try to login with incorrect password should return an "invalid password" error', (done) => {
-      testGraphql(done, mutationQuery(userTest.email, 'senha1'), (res) => {
+      testLogin(done, mutationLogin(userTest.email, 'senha1'), (res) => {
         const { errors, data } = res.body;
         expect(errors.length).to.equal(1);
         expect(errors[0].message).to.equal('Email or password is invalid');

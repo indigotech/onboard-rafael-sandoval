@@ -19,6 +19,8 @@
         "@data/*": ["./data/*"],
         "@core": ["./core"],
         "@core/*": ["./core/*"],
+        "@test": ["./test"],
+        "@test/*": ["./test/*"],
       }
     },
     "exclude": [
