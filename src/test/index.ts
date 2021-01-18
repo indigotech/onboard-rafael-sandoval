@@ -61,6 +61,7 @@ describe('Graphql', () => {
   beforeEach(async () => {
     await createUser(userTest);
   });
+
   afterEach(async () => {
     await deleteUserByEmail(userTest.email);
   });

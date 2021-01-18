@@ -51,7 +51,7 @@ describe('Query getUserById', () => {
     const res = await testGetUser(queryGetUser, id, token);
     const user = res.body.data.getUserById;
     checkUser(user, userTest);
-    });
+  });
 
   it('Should return unauthorized when requested without valid token', async () => {
     const res = await testGetUser(queryGetUser, id, 'abc');
