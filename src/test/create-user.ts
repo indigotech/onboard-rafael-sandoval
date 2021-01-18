@@ -2,8 +2,8 @@ import { CreateUserInput } from '@graphql-schema/types';
 import { User, IUser } from '@data/db/entity/user';
 import { createUser, deleteUserByEmail, getUserByEmail } from '@data/db/query/user';
 import { createToken } from '@core/authentication';
-import { userTest, checkUserStrings } from '@test';
-import { checkUserError } from '@test/helpers/userCheck';
+import { userTest, checkUserStrings } from '@test/helpers/user';
+import { checkUserError } from '@test/helpers/user';
 import { expect } from 'chai';
 import * as request from 'supertest';
 import { getRepository } from 'typeorm';
@@ -23,7 +23,6 @@ const mutationCreateUser = `
       name
       birthDate
       cpf
-      password
     }
   }
 `;
@@ -52,8 +51,8 @@ const testCreateUser = async (
       userCreated,
       userCount,
     };
-  } catch (error) {
-    throw error;
+  } catch (err) {
+    throw err;
   }
 };
 

@@ -7,7 +7,6 @@ export const schema = gql`
     email: String!
     birthDate: String!
     cpf: String!
-    password: String!
   }
 
   type Login {
@@ -25,6 +24,7 @@ export const schema = gql`
 
   type Query {
     hello: String
+    getUserById(id: ID!): User
   }
 
   type Mutation {
