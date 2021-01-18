@@ -3,6 +3,7 @@ import { User, IUser } from '@data/db/entity/user';
 import { createUser, deleteUserByEmail, getUserByEmail } from '@data/db/query/user';
 import { createToken } from '@core/authentication';
 import { userTest, checkUserStrings } from '@test';
+import { checkUserError } from '@test/helpers/userCheck';
 import { expect } from 'chai';
 import * as request from 'supertest';
 import { getRepository } from 'typeorm';
@@ -28,12 +29,10 @@ const mutationCreateUser = `
 `;
 
 const testCreateUser = async (
-  done: Mocha.Done,
   query: string,
   user: CreateUserInput,
   token: string,
-  callback: (res: request.Response, userCreated: User, userCount: number) => void,
-) => {
+): Promise<{ res: request.Response; userCreated: User; userCount: number }> => {
   try {
     const res = await request(`${process.env.URL}:${process.env.PORT}`)
       .post('/graphql')
@@ -48,10 +47,13 @@ const testCreateUser = async (
       .expect('Content-Type', /json/);
     const userCreated = await getUserByEmail(createTest.email);
     const userCount = await getRepository(User).count();
-    callback(res, userCreated, userCount);
-    done();
-  } catch (err) {
-    return done(err);
+    return {
+      res,
+      userCreated,
+      userCount,
+    };
+  } catch (error) {
+    throw error;
   }
 };
 
@@ -60,90 +62,79 @@ const checkCreatedUser = (user: User, test: IUser) => {
   expect(user.birthDate.toString()).to.equal(new Date(createTest.birthDate).toString());
 };
 
-const checkError = (obj: { message: string; code: number; data: any; errors: any; user: User; userCount: number }) => {
-  expect(obj.errors.length).to.equal(1);
-  expect(obj.errors[0].message).to.equal(obj.message);
-  expect(obj.errors[0].code).to.equal(obj.code);
-  expect(obj.data.createUser).to.equal(null);
-  expect(obj.user).to.be.undefined;
-  expect(obj.userCount).to.equal(1);
-};
-
 describe('Mutation CreateUser', () => {
   before(async () => {
     const user = await createUser(userTest);
     token = createToken({ id: user.id, rememberMe: true });
   });
+
   after(async () => {
     await deleteUserByEmail(userTest.email);
   });
+
   afterEach(async () => {
     await deleteUserByEmail(createTest.email);
   });
-  it('Should create user when called with right parametes and authentication', (done) => {
-    testCreateUser(done, mutationCreateUser, createTest, token, (res, user, userCount) => {
-      const { data } = res.body;
-      expect(userCount).to.equal(2);
-      expect(user.id.toString()).to.equal(data.createUser.id);
-      checkCreatedUser(user, createTest);
+
+  it('Should create user when called with right parametes and authentication', async () => {
+    const { res, userCreated, userCount } = await testCreateUser(mutationCreateUser, createTest, token);
+    const { data } = res.body;
+    expect(userCount).to.equal(2);
+    expect(userCreated.id.toString()).to.equal(data.createUser.id);
+    checkCreatedUser(userCreated, createTest);
+  });
+
+  it('Should return authorization error when unauthorized', async () => {
+    const { res, userCreated, userCount } = await testCreateUser(mutationCreateUser, createTest, 'abc');
+    const { errors, data } = res.body;
+    checkUserError({
+      message: 'Unauthorized',
+      code: 401,
+      errors,
+      data,
+      userCreated,
+      userCount,
     });
   });
 
-  it('Should return authorization error when unauthorized', (done) => {
-    testCreateUser(done, mutationCreateUser, createTest, 'abc', (res, user, userCount) => {
-      const { errors, data } = res.body;
-      checkError({
-        message: 'Unauthorized',
-        code: 401,
-        errors,
-        data,
-        user,
-        userCount,
-      });
-    });
-  });
-
-  it('Should return email format error when email is not valid', (done) => {
+  it('Should return email format error when email is not valid', async () => {
     const test = { ...createTest, email: 'abcabc' };
-    testCreateUser(done, mutationCreateUser, test, token, (res, user, userCount) => {
-      const { errors, data } = res.body;
-      checkError({
-        message: 'Invalid email format',
-        code: 400,
-        errors,
-        data,
-        user,
-        userCount,
-      });
+    const { res, userCreated, userCount } = await testCreateUser(mutationCreateUser, test, token);
+    const { errors, data } = res.body;
+    checkUserError({
+      message: 'Invalid email format',
+      code: 400,
+      errors,
+      data,
+      userCreated,
+      userCount,
     });
   });
 
-  it('Should return password error when password is not valid', (done) => {
+  it('Should return password error when password is not valid', async () => {
     const test = { ...createTest, password: 'abcabc' };
-    testCreateUser(done, mutationCreateUser, test, token, (res, user, userCount) => {
-      const { errors, data } = res.body;
-      checkError({
-        message: 'Invalid Password',
-        code: 400,
-        errors,
-        data,
-        user,
-        userCount,
-      });
+    const { res, userCreated, userCount } = await testCreateUser(mutationCreateUser, test, token);
+    const { errors, data } = res.body;
+    checkUserError({
+      message: 'Invalid Password',
+      code: 400,
+      errors,
+      data,
+      userCreated,
+      userCount,
     });
   });
 
-  it('Should return email already exist error when other user already has this email', (done) => {
-    testCreateUser(done, mutationCreateUser, userTest, token, (res, user, userCount) => {
-      const { errors, data } = res.body;
-      checkError({
-        message: 'Email already exists',
-        code: 409,
-        errors,
-        data,
-        user,
-        userCount,
-      });
+  it('Should return email already exist error when other user already has this email', async () => {
+    const { res, userCreated, userCount } = await testCreateUser(mutationCreateUser, userTest, token);
+    const { errors, data } = res.body;
+    checkUserError({
+      message: 'Email already exists',
+      code: 409,
+      errors,
+      data,
+      userCreated,
+      userCount,
     });
   });
 });
