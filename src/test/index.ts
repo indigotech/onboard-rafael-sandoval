@@ -1,14 +1,11 @@
 import { createUser, deleteUserByEmail } from '@data/db/query/user';
-import { IUser } from '@data/db/entity/user';
+import { IUser, User } from '@data/db/entity/user';
 import { decodeToken, hash } from '@core/authentication';
 import { expect } from 'chai';
-import { start, setEnv } from 'setup';
-import type { Express } from 'express';
+import { listen, setEnv } from 'setup';
 import * as request from 'supertest';
 
-let app: Express;
-
-const userTest = {
+export const userTest = {
   name: 'Rafael',
   email: 'rafael.sandoval@taqtile.com.br',
   birthDate: '05-15-1994',
@@ -22,12 +19,16 @@ interface IGraphqlUser extends IUser {
   birthDate: string;
 }
 
-const checkUser = (user: IGraphqlUser, userTest: IUser) => {
+export const checkUserStrings = (user: IGraphqlUser | IUser | User, userTest: IUser) => {
   expect(user.name).to.equal(userTest.name);
   expect(user.email).to.equal(userTest.email);
-  expect(new Date(parseInt(user.birthDate)).toString()).to.equal(new Date(userTest.birthDate).toString());
   expect(user.cpf).to.equal(userTest.cpf);
   expect(user.password).to.equal(hash(userTest.password));
+};
+
+const checkUser = (user: IGraphqlUser, userTest: IUser) => {
+  checkUserStrings(user, userTest);
+  expect(new Date(parseInt(user.birthDate)).toString()).to.equal(new Date(userTest.birthDate).toString());
 };
 
 const testGraphql = async (
@@ -36,7 +37,7 @@ const testGraphql = async (
   callback: (res: request.Response, base?: unknown) => void,
 ) => {
   try {
-    const res = await request(app)
+    const res = await request(`${process.env.URL}:${process.env.PORT}`)
       .post('/graphql')
       .send({
         query,
@@ -52,15 +53,7 @@ const testGraphql = async (
 
 before(async () => {
   setEnv();
-  app = await start();
-});
-
-beforeEach(async () => {
-  await createUser(userTest);
-});
-
-afterEach(async () => {
-  await deleteUserByEmail(userTest.email);
+  await listen();
 });
 
 describe('Graphql', () => {
@@ -89,6 +82,13 @@ describe('Graphql', () => {
       }
     }`;
   };
+
+  beforeEach(async () => {
+    await createUser(userTest);
+  });
+  afterEach(async () => {
+    await deleteUserByEmail(userTest.email);
+  });
 
   describe('Mutation login', () => {
     it('Should be possible to login with valid email and password', (done) => {
