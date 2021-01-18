@@ -1,14 +1,9 @@
-import { dbConnection } from '@data/db/connection';
 import { User } from '@data/db/entity/user';
-import { setEnv } from 'setup';
 import * as faker from 'faker';
 import { getRepository } from 'typeorm';
 import { hash } from '@core/authentication';
 
-const userSeed = async () => {
-  setEnv();
-  await dbConnection();
-
+export const userSeed = async () => {
   const repo = getRepository(User);
 
   const userList: User[] = [];
@@ -26,5 +21,3 @@ const userSeed = async () => {
   }
   repo.save(userList);
 };
-
-userSeed();
