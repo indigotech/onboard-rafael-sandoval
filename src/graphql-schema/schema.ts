@@ -9,6 +9,17 @@ export const schema = gql`
     cpf: String!
   }
 
+  type PageInfo {
+    count: Int!
+    offset: Int!
+    remaining: Int!
+  }
+
+  type Users {
+    info: PageInfo!
+    users: [User]!
+  }
+
   type Login {
     user: User!
     token: String!
@@ -25,6 +36,7 @@ export const schema = gql`
   type Query {
     hello: String
     getUserById(id: ID!): User
+    users(limit: Int, offset: Int): Users
   }
 
   type Mutation {

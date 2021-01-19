@@ -11,3 +11,9 @@ export interface CreateUserInput {
   cpf: string;
   password: string;
 }
+
+export interface IPageInfo {
+  count: number;
+  offset: number;
+  remaining: number;
+}

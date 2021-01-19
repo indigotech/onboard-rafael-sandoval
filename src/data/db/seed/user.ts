@@ -19,5 +19,5 @@ export const userSeed = async () => {
     const userEntity = repo.create(user);
     userList.push(userEntity);
   }
-  repo.save(userList);
+  await repo.save(userList);
 };
