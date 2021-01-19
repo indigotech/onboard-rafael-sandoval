@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Address } from '@data/db/entity/address';
 
 @Entity()
 export class User {
@@ -19,6 +20,9 @@ export class User {
 
   @Column()
   password: string;
+
+  @OneToMany(() => Address, (address) => address.user)
+  addresses: Address[];
 }
 
 export interface IUser {
