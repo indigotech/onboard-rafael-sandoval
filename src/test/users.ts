@@ -42,7 +42,7 @@ const testUsers = async (query: string, token: string, limit?: number, offset?: 
     .expect('Content-Type', /json/);
 };
 
-describe.only('Query Users', () => {
+describe('Query Users', () => {
   before(async () => {
     await userSeed();
     token = createToken({ id: 1, rememberMe: true });
