@@ -81,6 +81,7 @@ describe('Mutation CreateUser', () => {
     expect(userCount).to.equal(2);
     expect(userCreated.id.toString()).to.equal(data.createUser.id);
     checkCreatedUser(userCreated, createTest);
+    checkUserStrings(data.createUser, createTest);
   });
 
   it('Should return authorization error when unauthorized', async () => {
