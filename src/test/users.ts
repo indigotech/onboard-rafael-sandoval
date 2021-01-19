@@ -47,9 +47,12 @@ const testUsers = async (query: string, token: string, limit?: number, offset?: 
 };
 
 describe('Query Users', () => {
+  before(() => {
+    token = createToken({ id: 1, rememberMe: true });
+  });
+
   beforeEach(async () => {
     await userSeed();
-    token = createToken({ id: 1, rememberMe: true });
   });
 
   afterEach(async () => {
