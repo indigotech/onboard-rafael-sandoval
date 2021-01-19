@@ -40,5 +40,5 @@ export interface IAddress {
   neighborhood: string;
   city: string;
   state: string;
-  userId: number;
+  userId?: number;
 }

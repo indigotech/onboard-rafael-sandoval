@@ -32,5 +32,5 @@ export interface IUser {
   birthDate: Date | string;
   cpf: string;
   password: string;
-  addresses?: [IAddress];
+  addresses?: IAddress[];
 }

@@ -23,7 +23,15 @@ const queryUsers = `
         birthDate
         cpf
         addresses {
+          id
+          cep
           street
+          streetNumber
+          complement
+          neighborhood
+          city
+          state
+          userId
         }
       }
     }

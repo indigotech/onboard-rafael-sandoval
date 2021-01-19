@@ -14,10 +14,12 @@ export const schema = gql`
     id: ID!
     cep: String!
     street: String!
+    streetNumber: String!
     complement: String
     neighborhood: String!
     city: String!
     state: String!
+    userId: ID!
   }
 
   type PageInfo {
