@@ -22,21 +22,17 @@ const queryGetUser = `
 `;
 
 const testGetUser = async (query: string, id: number, token: string): Promise<request.Response> => {
-  try {
-    return request(`${process.env.URL}:${process.env.PORT}`)
-      .post('/graphql')
-      .send({
-        query,
-        variables: {
-          id,
-        },
-      })
-      .set('Accept', 'application/json')
-      .set('Authorization', token)
-      .expect('Content-Type', /json/);
-  } catch (err) {
-    throw err;
-  }
+  return request(`${process.env.URL}:${process.env.PORT}`)
+    .post('/graphql')
+    .send({
+      query,
+      variables: {
+        id,
+      },
+    })
+    .set('Accept', 'application/json')
+    .set('Authorization', token)
+    .expect('Content-Type', /json/);
 };
 
 describe('Query getUserById', () => {
