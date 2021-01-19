@@ -30,3 +30,15 @@ export class Address {
   @ManyToOne(() => User, (user) => user.addresses)
   user: User;
 }
+
+export interface IAddress {
+  id: number;
+  cep: string;
+  street: string;
+  streetNumber: string;
+  complement?: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+  userId: number;
+}

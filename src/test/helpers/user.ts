@@ -45,4 +45,25 @@ export const checkUserStrings = (user: IGraphqlUser | IUser | User, userTest: IU
 export const checkUser = (user: IGraphqlUser, userTest: IUser) => {
   checkUserStrings(user, userTest);
   expect(new Date(parseInt(user.birthDate)).toString()).to.equal(new Date(userTest.birthDate).toString());
+  if (user.addresses) {
+    expect(user.addresses).to.be.an('array');
+  }
 };
+<<<<<<< HEAD
+=======
+
+export const checkUserFieldTypes = (user: IUser) => {
+  expect(user.id).to.be.a('string');
+  expect(user.name).to.be.a('string');
+  expect(user.email).to.be.a('string');
+  expect(user.birthDate).to.be.a('string');
+  expect(user.cpf).to.be.a('string');
+  expect(user.addresses).to.be.an('array');
+};
+
+export const checkPagination = (res: IPageInfo, test: IPageInfo) => {
+  expect(res.count).to.equal(test.count);
+  expect(res.passed).to.equal(test.passed);
+  expect(res.remaining).to.equal(test.remaining);
+};
+>>>>>>> 56aaf1f... add address to users queries
