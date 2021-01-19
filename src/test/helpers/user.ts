@@ -1,5 +1,4 @@
 import { User, IUser } from '@data/db/entity/user';
-import { IPageInfo } from '@graphql-schema/types';
 import { expect } from 'chai';
 
 export const userTest = {
@@ -33,7 +32,7 @@ export const checkError = (obj: { message: string; code: number; data: any; erro
   expect(obj.data.getUserById).to.equal(null);
 };
 
-interface IGraphqlUser extends IUser {
+export interface IGraphqlUser extends IUser {
   birthDate: string;
 }
 
@@ -46,18 +45,4 @@ export const checkUserStrings = (user: IGraphqlUser | IUser | User, userTest: IU
 export const checkUser = (user: IGraphqlUser, userTest: IUser) => {
   checkUserStrings(user, userTest);
   expect(new Date(parseInt(user.birthDate)).toString()).to.equal(new Date(userTest.birthDate).toString());
-};
-
-export const checkUserFieldTypes = (user: IUser) => {
-  expect(user.id).to.be.a('string');
-  expect(user.name).to.be.a('string');
-  expect(user.email).to.be.a('string');
-  expect(user.birthDate).to.be.a('string');
-  expect(user.cpf).to.be.a('string');
-};
-
-export const checkPagination = (res: IPageInfo, test: IPageInfo) => {
-  expect(res.count).to.equal(test.count);
-  expect(res.passed).to.equal(test.passed);
-  expect(res.remaining).to.equal(test.remaining);
 };
