@@ -11,7 +11,7 @@ export const schema = gql`
 
   type PageInfo {
     count: Int!
-    offset: Int!
+    passed: Int!
     remaining: Int!
   }
 

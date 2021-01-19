@@ -58,6 +58,6 @@ export const checkUserFieldTypes = (user: IUser) => {
 
 export const checkPagination = (res: IPageInfo, test: IPageInfo) => {
   expect(res.count).to.equal(test.count);
-  expect(res.offset).to.equal(test.offset);
+  expect(res.passed).to.equal(test.passed);
   expect(res.remaining).to.equal(test.remaining);
 };

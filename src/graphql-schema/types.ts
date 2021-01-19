@@ -14,6 +14,6 @@ export interface CreateUserInput {
 
 export interface IPageInfo {
   count: number;
-  offset: number;
+  passed: number;
   remaining: number;
 }
