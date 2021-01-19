@@ -27,7 +27,6 @@ export const Resolvers = {
       return {
         info: {
           count: userCount,
-          limit,
           passed: Math.min(offset, userCount),
           remaining: Math.max(userCount - offset - limit, 0),
         },
