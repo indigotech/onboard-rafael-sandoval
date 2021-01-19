@@ -32,7 +32,7 @@ export const checkError = (obj: { message: string; code: number; data: any; erro
   expect(obj.data.getUserById).to.equal(null);
 };
 
-interface IGraphqlUser extends IUser {
+export interface IGraphqlUser extends IUser {
   birthDate: string;
 }
 
