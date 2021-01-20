@@ -7,6 +7,18 @@ export const schema = gql`
     email: String!
     birthDate: String!
     cpf: String!
+    addresses: [Address]
+  }
+
+  type Address {
+    id: ID!
+    cep: String!
+    street: String!
+    streetNumber: String!
+    complement: String
+    neighborhood: String!
+    city: String!
+    state: String!
   }
 
   type PageInfo {

@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { Address } from '@data/db/entity/address';
+import { Address, IAddress } from '@data/db/entity/address';
 
 @Entity()
 export class User {
@@ -32,4 +32,5 @@ export interface IUser {
   birthDate: Date | string;
   cpf: string;
   password: string;
+  addresses?: IAddress[];
 }

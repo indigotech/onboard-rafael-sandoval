@@ -22,6 +22,16 @@ const queryUsers = `
         email
         birthDate
         cpf
+        addresses {
+          id
+          cep
+          street
+          streetNumber
+          complement
+          neighborhood
+          city
+          state
+        }
       }
     }
   }

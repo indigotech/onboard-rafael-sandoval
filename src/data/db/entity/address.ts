@@ -16,7 +16,7 @@ export class Address {
   streetNumber: string;
 
   @Column({ nullable: true })
-  complement: string;
+  complement?: string;
 
   @Column()
   neighborhood: string;
@@ -29,4 +29,16 @@ export class Address {
 
   @ManyToOne(() => User, (user) => user.addresses)
   user: User;
+}
+
+export interface IAddress {
+  id: number;
+  cep: string;
+  street: string;
+  streetNumber: string;
+  complement?: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+  userId?: number;
 }

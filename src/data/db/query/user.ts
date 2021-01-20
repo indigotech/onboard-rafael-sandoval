@@ -8,11 +8,12 @@ export const getUsers = (limit: number, offset: number): Promise<[User[], number
     order: { name: 'ASC' },
     take: limit,
     skip: offset,
+    relations: ['addresses'],
   });
 };
 
 export const getUserById = (id: number): Promise<User> => {
-  return getRepository(User).findOne({ id });
+  return getRepository(User).findOne({ id }, { relations: ['addresses'] });
 };
 
 export const getUserByEmail = (email: string): Promise<User> => {

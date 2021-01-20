@@ -7,6 +7,7 @@ export const userTest = {
   birthDate: '05-15-1994',
   cpf: '12345678900',
   password: 'senha123',
+  addresses: [],
 };
 
 export const checkUserError = (obj: {
@@ -45,4 +46,7 @@ export const checkUserStrings = (user: IGraphqlUser | IUser | User, userTest: IU
 export const checkUser = (user: IGraphqlUser, userTest: IUser) => {
   checkUserStrings(user, userTest);
   expect(new Date(parseInt(user.birthDate)).toString()).to.equal(new Date(userTest.birthDate).toString());
+  if (user.addresses) {
+    expect(user.addresses).to.be.deep.eq(userTest.addresses);
+  }
 };

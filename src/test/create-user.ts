@@ -12,6 +12,7 @@ let token: string;
 
 const createTest = {
   ...userTest,
+  addresses: undefined,
   email: 'rafael.sandoval2@taqtile.com.br',
 };
 
@@ -126,7 +127,8 @@ describe('Mutation CreateUser', () => {
   });
 
   it('Should return email already exist error when other user already has this email', async () => {
-    const { res, userCreated, userCount } = await testCreateUser(mutationCreateUser, userTest, token);
+    const user = { ...userTest, addresses: undefined };
+    const { res, userCreated, userCount } = await testCreateUser(mutationCreateUser, user, token);
     const { errors, data } = res.body;
     checkUserError({
       message: 'Email already exists',

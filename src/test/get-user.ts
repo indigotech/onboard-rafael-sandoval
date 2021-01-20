@@ -14,26 +14,25 @@ const queryGetUser = `
       email
       cpf
       birthDate
+      addresses {
+        street
+      }
     }
   }
 `;
 
 const testGetUser = async (query: string, id: number, token: string): Promise<request.Response> => {
-  try {
-    return await request(`${process.env.URL}:${process.env.PORT}`)
-      .post('/graphql')
-      .send({
-        query,
-        variables: {
-          id,
-        },
-      })
-      .set('Accept', 'application/json')
-      .set('Authorization', token)
-      .expect('Content-Type', /json/);
-  } catch (err) {
-    throw err;
-  }
+  return request(`${process.env.URL}:${process.env.PORT}`)
+    .post('/graphql')
+    .send({
+      query,
+      variables: {
+        id,
+      },
+    })
+    .set('Accept', 'application/json')
+    .set('Authorization', token)
+    .expect('Content-Type', /json/);
 };
 
 describe('Query getUserById', () => {
