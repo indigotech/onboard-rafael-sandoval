@@ -19,7 +19,6 @@ export const schema = gql`
     neighborhood: String!
     city: String!
     state: String!
-    userId: ID!
   }
 
   type PageInfo {

@@ -31,7 +31,6 @@ const queryUsers = `
           neighborhood
           city
           state
-          userId
         }
       }
     }
